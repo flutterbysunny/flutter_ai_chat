@@ -1,0 +1,36 @@
+name: flutter_ai_chat
+description: AI Chat App using Gemini API with GetX & Hive
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # AI
+  google_generative_ai: ^0.4.6
+
+  # State Management
+  get: ^4.6.6
+
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # UI
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.2.1
+  flutter_markdown: ^0.6.22
+  iconsax: ^0.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.9
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
