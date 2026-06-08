@@ -35,7 +35,7 @@ lib/
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/flutter_ai_chat.git
+git clone https://github.com/flutterbysunny/flutter_ai_chat.git
 cd flutter_ai_chat
 ```
 
