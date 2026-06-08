@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart' as http;
 import '../models/chat_message.dart';
 
 class ChatController extends GetxController {
@@ -10,41 +11,20 @@ class ChatController extends GetxController {
   final isStreaming = false.obs;
 
   late Box<ChatMessage> _chatBox;
-  late GenerativeModel _model;
-  late ChatSession _chat;
 
-  static const _apiKey = 'YOUR_API_KEY_HERE';
+  // ✅ Free Groq API Key — console.groq.com se lo
+  static const _apiKey = 'YOUR_API_KEY';
+  static const _model = 'llama-3.3-70b-versatile'; // Free & powerful
 
   @override
   void onInit() {
     super.onInit();
     _initHive();
-    _initGemini();
   }
 
   Future<void> _initHive() async {
     _chatBox = await Hive.openBox<ChatMessage>('chat_history');
     messages.assignAll(_chatBox.values.toList());
-  }
-
-  void _initGemini() {
-    _model = GenerativeModel(
-      model: 'gemini-2.0-flash',
-      apiKey: _apiKey,
-      generationConfig: GenerationConfig(
-        temperature: 0.8,
-        maxOutputTokens: 1024,
-      ),
-      systemInstruction: Content.system(
-        'You are a helpful, friendly, and concise AI assistant.',
-      ),
-    );
-
-    final history = messages.map((m) {
-      return Content(m.isUser ? 'user' : 'model', [TextPart(m.text)]);
-    }).toList();
-
-    _chat = _model.startChat(history: history);
   }
 
   Future<void> sendMessage(String text) async {
@@ -62,21 +42,55 @@ class ChatController extends GetxController {
     streamingText.value = '';
 
     try {
-      final response = _chat.sendMessageStream(Content.text(text.trim()));
-      final buffer = StringBuffer();
+      // Build history for Groq
+      final history = messages.map((m) => {
+        'role': m.isUser ? 'user' : 'assistant',
+        'content': m.text,
+      }).toList();
 
-      await for (final chunk in response) {
-        buffer.write(chunk.text ?? '');
-        streamingText.value = buffer.toString();
+      final response = await http.post(
+        Uri.parse('https://api.groq.com/openai/v1/chat/completions'),
+        headers: {
+          'Authorization': 'Bearer $_apiKey',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'model': _model,
+          'messages': [
+            {
+              'role': 'system',
+              'content': 'You are a helpful, friendly, and concise AI assistant.',
+            },
+            ...history,
+          ],
+          'max_tokens': 1024,
+          'temperature': 0.8,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final reply = data['choices'][0]['message']['content'] as String;
+
+        // Simulate streaming effect
+        isStreaming.value = true;
+        final buffer = StringBuffer();
+        for (int i = 0; i < reply.length; i++) {
+          buffer.write(reply[i]);
+          streamingText.value = buffer.toString();
+          await Future.delayed(const Duration(milliseconds: 10));
+        }
+
+        isStreaming.value = false;
+        _addMessage(ChatMessage(
+          text: reply,
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+        streamingText.value = '';
+      } else {
+        throw Exception('Status: ${response.statusCode} — ${response.body}');
       }
-
-      isStreaming.value = false;
-      _addMessage(ChatMessage(
-        text: buffer.toString(),
-        isUser: false,
-        timestamp: DateTime.now(),
-      ));
-      streamingText.value = '';
     } catch (e) {
       isStreaming.value = false;
       _addMessage(ChatMessage(
@@ -92,7 +106,6 @@ class ChatController extends GetxController {
   Future<void> clearChat() async {
     await _chatBox.clear();
     messages.clear();
-    _initGemini();
   }
 
   void _addMessage(ChatMessage msg) {
