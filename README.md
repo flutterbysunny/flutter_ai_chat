@@ -6,7 +6,7 @@ A production-ready AI chat app built with **Flutter**, powered by **Google Gemin
 
 ## ✨ Features
 
-- 🧠 **Gemini 2.0 Flash** — Fast & smart AI responses
+- 🧠 **Grok 3.3 llama** — Fast & smart AI responses
 - ⚡ **Streaming responses** — Typewriter effect, real-time
 - 💬 **Chat history** — Persisted locally with Hive
 - 🎨 **Beautiful dark UI** — Clean, modern design
