@@ -15,7 +15,7 @@ class ChatScreen extends StatelessWidget {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  void _scrollToBottom() {
+  void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -34,7 +34,7 @@ class ChatScreen extends StatelessWidget {
       appBar: _buildAppBar(),
       body: Column(
         children: [
-          Expanded(child: _buildMessageList(context)),
+          Expanded(child: buildMessageList(context)),
           _buildInputBar(context),
         ],
       ),
@@ -119,15 +119,15 @@ class ChatScreen extends StatelessWidget {
   }
 
   // ─── Message List ──────────────────────────────────────────────
-  Widget _buildMessageList(BuildContext context) {
+  Widget buildMessageList(BuildContext context) {
     return Obx(() {
-      _scrollToBottom();
+      scrollToBottom();
       final msgs = _controller.messages;
       final isStreaming = _controller.isStreaming.value;
       final streamText = _controller.streamingText.value;
 
       return msgs.isEmpty && !isStreaming
-          ? _buildEmptyState()
+          ? buildEmptyState()
           : ListView.builder(
         controller: _scrollController,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -136,14 +136,14 @@ class ChatScreen extends StatelessWidget {
           if (i == msgs.length && isStreaming) {
             return _buildStreamingBubble(context, streamText);
           }
-          return _buildMessageBubble(context, msgs[i]);
+          return buildMessageBubble(context, msgs[i]);
         },
       );
     });
   }
 
   // ─── Empty State ───────────────────────────────────────────────
-  Widget _buildEmptyState() {
+  Widget buildEmptyState() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -181,14 +181,14 @@ class ChatScreen extends StatelessWidget {
               ),
             ).animate().fadeIn(delay: 250.ms),
             const SizedBox(height: 32),
-            _buildSuggestions(),
+            buildSuggestions(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSuggestions() {
+  Widget buildSuggestions() {
     final suggestions = [
       ('Write a Flutter widget', Iconsax.code),
       ('Explain async/await', Iconsax.book_1),
@@ -238,7 +238,7 @@ class ChatScreen extends StatelessWidget {
   }
 
   // ─── Message Bubble ────────────────────────────────────────────
-  Widget _buildMessageBubble(BuildContext context, ChatMessage msg) {
+  Widget buildMessageBubble(BuildContext context, ChatMessage msg) {
     final isUser = msg.isUser;
     final maxW = MediaQuery.of(context).size.width * 0.82;
 
@@ -250,7 +250,7 @@ class ChatScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
-            _buildAvatar(isUser: false),
+            buildAvatar(isUser: false),
             const SizedBox(width: 10),
           ],
           Flexible(
@@ -285,11 +285,11 @@ class ChatScreen extends StatelessWidget {
                       height: 1.55,
                     ),
                   )
-                      : _buildMarkdown(msg.text),
+                      : buildMarkdown(msg.text),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _formatTime(msg.timestamp),
+                  formatTime(msg.timestamp),
                   style: GoogleFonts.dmSans(
                     color: const Color(0xFF333350),
                     fontSize: 10.5,
@@ -300,7 +300,7 @@ class ChatScreen extends StatelessWidget {
           ).animate().fadeIn(duration: 250.ms).slideY(begin: 0.05, end: 0),
           if (isUser) ...[
             const SizedBox(width: 10),
-            _buildAvatar(isUser: true),
+            buildAvatar(isUser: true),
           ],
         ],
       ),
@@ -308,7 +308,7 @@ class ChatScreen extends StatelessWidget {
   }
 
   // ─── Markdown Builder ──────────────────────────────────────────
-  Widget _buildMarkdown(String data) {
+  Widget buildMarkdown(String data) {
     return MarkdownBody(
       data: data,
       shrinkWrap: true,
@@ -393,7 +393,7 @@ class ChatScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildAvatar(isUser: false),
+          buildAvatar(isUser: false),
           const SizedBox(width: 10),
           Flexible(
             child: Container(
@@ -403,7 +403,7 @@ class ChatScreen extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4),
               child: text.isEmpty
                   ? _buildTypingIndicator()
-                  : _buildMarkdown(text),
+                  : buildMarkdown(text),
             ),
           ),
         ],
@@ -442,7 +442,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar({required bool isUser}) {
+  Widget buildAvatar({required bool isUser}) {
     return Container(
       width: 30,
       height: 30,
@@ -543,7 +543,7 @@ class ChatScreen extends StatelessWidget {
   }
 
   // ─── Helpers ───────────────────────────────────────────────────
-  String _formatTime(DateTime dt) {
+  String formatTime(DateTime dt) {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';

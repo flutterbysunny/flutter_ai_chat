@@ -1,4 +1,4 @@
-# 🤖 Flutter AI Chat — Gemini Powered
+# 🤖 Flutter AI Chat — Grok Powered
 
 A production-ready AI chat app built with **Flutter**, powered by **Google Gemini API**, with **GetX** state management and **Hive** for local chat history.
 
