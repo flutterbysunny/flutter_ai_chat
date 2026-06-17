@@ -12,7 +12,7 @@ class ChatController extends GetxController {
 
   late Box<ChatMessage> _chatBox;
 
-  // ✅ Free Groq API Key — console.groq.com se lo
+  // Free Groq API Key — console.groq.com se lo
   static const _apiKey = 'YOUR_API_KEY';
   static const _model = 'llama-3.3-70b-versatile'; // Free & powerful
 
