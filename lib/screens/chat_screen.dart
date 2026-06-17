@@ -35,7 +35,7 @@ class ChatScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(child: buildMessageList(context)),
-          _buildInputBar(context),
+          buildInputBar(context),
         ],
       ),
     );
@@ -134,7 +134,7 @@ class ChatScreen extends StatelessWidget {
         itemCount: msgs.length + (isStreaming ? 1 : 0),
         itemBuilder: (ctx, i) {
           if (i == msgs.length && isStreaming) {
-            return _buildStreamingBubble(context, streamText);
+            return buildStreamingBubble(context, streamText);
           }
           return buildMessageBubble(context, msgs[i]);
         },
@@ -314,7 +314,7 @@ class ChatScreen extends StatelessWidget {
       shrinkWrap: true,
       softLineBreak: true,
       builders: {
-        'code': _CodeBlockBuilder(),
+        'code': CodeBlockBuilder(),
       },
       styleSheet: MarkdownStyleSheet(
         p: GoogleFonts.dmSans(
@@ -387,7 +387,7 @@ class ChatScreen extends StatelessWidget {
   }
 
   // ─── Streaming Bubble ──────────────────────────────────────────
-  Widget _buildStreamingBubble(BuildContext context, String text) {
+  Widget buildStreamingBubble(BuildContext context, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -402,7 +402,7 @@ class ChatScreen extends StatelessWidget {
               ),
               padding: const EdgeInsets.only(top: 4),
               child: text.isEmpty
-                  ? _buildTypingIndicator()
+                  ? buildTypingIndicator()
                   : buildMarkdown(text),
             ),
           ),
@@ -411,7 +411,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTypingIndicator() {
+  Widget buildTypingIndicator() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -463,7 +463,7 @@ class ChatScreen extends StatelessWidget {
   }
 
   // ─── Input Bar ─────────────────────────────────────────────────
-  Widget _buildInputBar(BuildContext context) {
+  Widget buildInputBar(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(
           16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
@@ -598,7 +598,7 @@ class ChatScreen extends StatelessWidget {
 }
 
 // ─── Custom Code Block Builder (Scrollable + Copy) ────────────────
-class _CodeBlockBuilder extends MarkdownElementBuilder {
+class CodeBlockBuilder extends MarkdownElementBuilder {
   @override
   Widget? visitElementAfter(element, TextStyle? preferredStyle) {
     final code = element.textContent;

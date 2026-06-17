@@ -77,6 +77,7 @@ flutter run
 - ✅ 15 requests/minute
 - ✅ 1,500 requests/day
 - ✅ No credit card required
+- ✅ No Payment This Time
 
 ---
 
